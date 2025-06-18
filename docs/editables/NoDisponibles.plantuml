@@ -1,0 +1,51 @@
+@startuml
+actor Client
+participant "LicenseServer\n(Singleton)" as LS
+
+== Inicio del programa ==
+Client -> LS : getInstance()
+activate LS
+LS -> LS : verifica instance == null
+alt instance es null
+    LS -> LS : constructor privado\nLicenseServer()
+    LS -> LS : licenseCount = 2
+    LS -> LS : guarda instancia en static instance
+end
+LS --> Client : retorna instancia
+deactivate LS
+
+== Consultar licencias iniciales ==
+Client -> LS : getAvailableLicenses()
+activate LS
+LS --> Client : retorna 2
+deactivate LS
+
+== Intento 1: Consumir licencia (éxito) ==
+Client -> LS : consumeLicense()
+activate LS
+LS -> LS : licenseCount > 0
+LS -> LS : licenseCount--
+LS --> Client : true
+deactivate LS
+
+== Intento 2: Consumir licencia (éxito) ==
+Client -> LS : consumeLicense()
+activate LS
+LS -> LS : licenseCount > 0
+LS -> LS : licenseCount--
+LS --> Client : true
+deactivate LS
+
+== Intento 3: Consumir licencia (fallo) ==
+Client -> LS : consumeLicense()
+activate LS
+LS -> LS : licenseCount == 0
+LS --> Client : false
+deactivate LS
+
+== Consultar licencias finales ==
+Client -> LS : getAvailableLicenses()
+activate LS
+LS --> Client : retorna 0
+deactivate LS
+@enduml

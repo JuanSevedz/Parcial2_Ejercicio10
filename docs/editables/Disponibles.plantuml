@@ -1,0 +1,41 @@
+@startuml
+actor Client
+participant "LicenseServer\n(Singleton)" as LS
+
+== Inicio del programa ==
+Client -> LS : getInstance()
+activate LS
+LS -> LS : verifica instance == null
+alt instance es null
+    LS -> LS : constructor privado\nLicenseServer()
+    LS -> LS : guarda instancia en static instance
+end
+LS --> Client : retorna instancia
+deactivate LS
+
+== Consultar licencias ==
+Client -> LS : getAvailableLicenses()
+activate LS
+LS --> Client : cantidad de licencias (ej: 100)
+deactivate LS
+
+== Consumir licencias ==
+loop 5 veces
+    Client -> LS : consumeLicense()
+    activate LS
+    LS -> LS : verifica licenseCount > 0
+    alt hay licencias
+        LS -> LS : licenseCount--
+        LS --> Client : true
+    else no hay licencias
+        LS --> Client : false
+    end
+    deactivate LS
+end
+
+== Consultar licencias restantes ==
+Client -> LS : getAvailableLicenses()
+activate LS
+LS --> Client : cantidad restante (ej: 95)
+deactivate LS
+@enduml
